@@ -50,6 +50,9 @@ func Unpack(str string) (string, error) {
 			return "", ErrInvalidString
 		}
 	}
+	if escaped {
+		return "", ErrInvalidString
+	}
 	if lastSymbol != 0 {
 		sb.WriteRune(lastSymbol)
 	}
