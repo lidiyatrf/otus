@@ -112,11 +112,11 @@ func TestTop10(t *testing.T) {
 			"type",     // 12
 			"variable", // 11
 			"of",       // 10
-			"is",       //6
+			"is",       // 6
 			"or",       // 6
 			"for",      // 4
 			"function", // 4
-			"and",      //3
+			"and",      // 3
 		}
 		require.Equal(t, expected, Top10(myText))
 	})
