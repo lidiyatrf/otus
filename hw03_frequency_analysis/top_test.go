@@ -9,7 +9,8 @@ import (
 // Change to true if needed.
 var taskWithAsteriskIsCompleted = true
 
-var text = `Как видите, он  спускается  по  лестнице  вслед  за  своим
+var (
+	text = `Как видите, он  спускается  по  лестнице  вслед  за  своим
 	другом   Кристофером   Робином,   головой   вниз,  пересчитывая
 	ступеньки собственным затылком:  бум-бум-бум.  Другого  способа
 	сходить  с  лестницы  он  пока  не  знает.  Иногда ему, правда,
@@ -42,6 +43,30 @@ var text = `Как видите, он  спускается  по  лестни�
 	иногда,  особенно  когда  папа  дома,  он больше любит тихонько
 	посидеть у огня и послушать какую-нибудь интересную сказку.
 		В этот вечер...`
+
+	myText = `A variable is a storage location for holding a value. 
+	The set of permissible values is determined by the variable's type.
+	
+	A variable declaration or, for function parameters and results, 
+	the signature of a function declaration or function literal reserves 
+	storage for a named variable. Calling the built-in function new or 
+	taking the address of a composite literal allocates storage for a 
+	variable at run time. Such an anonymous variable is referred to 
+	via a (possibly implicit) pointer indirection.
+
+	Structured variables of array, slice, and struct types have elements 
+	and fields that may be addressed individually. Each such element acts like a variable.
+
+	The static type (or just type) of a variable is the type given in 
+	its declaration, the type provided in the new call or composite 
+	literal, or the type of an element of a structured variable. 
+	Variables of interface type also have a distinct dynamic type, 
+	which is the concrete type of the value assigned to the variable at
+	run time (unless the value is the predeclared identifier nil, which 
+	has no type). The dynamic type may vary during execution but values 
+	stored in interface variables are always assignable to the static type
+	of the variable.`
+)
 
 func TestTop10(t *testing.T) {
 	t.Run("no words in empty string", func(t *testing.T) {
@@ -78,5 +103,21 @@ func TestTop10(t *testing.T) {
 			}
 			require.Equal(t, expected, Top10(text))
 		}
+	})
+
+	t.Run("positive test", func(t *testing.T) {
+		expected := []string{
+			"the",      // 18
+			"a",        // 13
+			"type",     // 12
+			"variable", // 11
+			"of",       // 10
+			"is",       //6
+			"or",       // 6
+			"for",      // 4
+			"function", // 4
+			"and",      //3
+		}
+		require.Equal(t, expected, Top10(myText))
 	})
 }
