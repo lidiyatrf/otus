@@ -19,7 +19,8 @@ type wordOccStruct struct {
 func Top10(str string) []string {
 	wordToAmountMap := mapWordToAmount(str)
 	array := convertMapToArray(wordToAmountMap)
-	return getTop10Words(array)
+	result := getTop10Words(array)
+	return result
 }
 
 func mapWordToAmount(str string) map[string]int {
@@ -62,16 +63,18 @@ func convertMapToArray(wordToAmountMap map[string]int) []wordOccStruct {
 }
 
 func getTop10Words(array []wordOccStruct) []string {
-	sort.Slice(array, func(i, j int) bool {
-		if array[i].amount == array[j].amount {
-			return array[i].word < array[j].word
+	arrToSort := make([]wordOccStruct, len(array))
+	copy(arrToSort, array)
+	sort.Slice(arrToSort, func(i, j int) bool {
+		if arrToSort[i].amount == arrToSort[j].amount {
+			return arrToSort[i].word < arrToSort[j].word
 		}
-		return array[i].amount > array[j].amount
+		return arrToSort[i].amount > arrToSort[j].amount
 	})
 
 	var result []string
-	for i := 0; i < 10 && i < len(array); i++ {
-		result = append(result, array[i].word)
+	for i := 0; i < 10 && i < len(arrToSort); i++ {
+		result = append(result, arrToSort[i].word)
 	}
 	return result
 }
