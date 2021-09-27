@@ -44,7 +44,7 @@ var (
 	посидеть у огня и послушать какую-нибудь интересную сказку.
 		В этот вечер...`
 
-	myText = `A variable is a storage location for holding a value. 
+	engText = `A variable is a storage location for holding a value. 
 	The set of permissible values is determined by the variable's type.
 	
 	A variable declaration or, for function parameters and results, 
@@ -56,7 +56,6 @@ var (
 
 	Structured variables of array, slice, and struct types have elements 
 	and fields that may be addressed individually. Each such element acts like a variable.
-
 	The static type (or just type) of a variable is the type given in 
 	its declaration, the type provided in the new call or composite 
 	literal, or the type of an element of a structured variable. 
@@ -66,13 +65,16 @@ var (
 	has no type). The dynamic type may vary during execution but values 
 	stored in interface variables are always assignable to the static type
 	of the variable.`
+
+	oneOccurrenceText = "This repository holds supplementary Go libraries for text processing, many involving Unicode."
+
+	shortText = "This task is a golang task."
 )
 
 func TestTop10(t *testing.T) {
 	t.Run("no words in empty string", func(t *testing.T) {
 		require.Len(t, Top10(""), 0)
 	})
-
 	t.Run("positive test", func(t *testing.T) {
 		if taskWithAsteriskIsCompleted {
 			expected := []string{
@@ -105,7 +107,7 @@ func TestTop10(t *testing.T) {
 		}
 	})
 
-	t.Run("positive test", func(t *testing.T) {
+	t.Run("english text", func(t *testing.T) {
 		expected := []string{
 			"the",      // 18
 			"a",        // 13
@@ -118,6 +120,33 @@ func TestTop10(t *testing.T) {
 			"function", // 4
 			"and",      // 3
 		}
-		require.Equal(t, expected, Top10(myText))
+		require.Equal(t, expected, Top10(engText))
+	})
+
+	t.Run("every word one time occurs", func(t *testing.T) {
+		expected := []string{
+			"for",
+			"go",
+			"holds",
+			"involving",
+			"libraries",
+			"many",
+			"processing",
+			"repository",
+			"supplementary",
+			"text",
+		}
+		require.Equal(t, expected, Top10(oneOccurrenceText))
+	})
+
+	t.Run("short text with less than 10 words", func(t *testing.T) {
+		expected := []string{
+			"task",
+			"a",
+			"golang",
+			"is",
+			"this",
+		}
+		require.Equal(t, expected, Top10(shortText))
 	})
 }
