@@ -1,5 +1,7 @@
 package hw04lrucache
 
+import "sync"
+
 type Key string
 
 type Cache interface {
@@ -9,6 +11,8 @@ type Cache interface {
 }
 
 type lruCache struct {
+	mux sync.Mutex
+
 	capacity int
 	queue    List
 	items    map[Key]*ListItem
@@ -28,6 +32,9 @@ func NewCache(capacity int) Cache {
 }
 
 func (l *lruCache) Set(key Key, value interface{}) bool {
+	l.mux.Lock()
+	defer l.mux.Unlock()
+
 	if val, ok := l.items[key]; ok {
 		val.Value = cacheItem{
 			key:   string(key),
@@ -37,19 +44,24 @@ func (l *lruCache) Set(key Key, value interface{}) bool {
 		return true
 	}
 
+	if l.queue.Len()+1 > l.capacity {
+		back := l.queue.Back()
+		l.queue.Remove(back)
+		delete(l.items, Key(back.Value.(cacheItem).key))
+	}
 	newListItem := l.queue.PushFront(cacheItem{
 		key:   string(key),
 		value: value,
 	})
 	l.items[key] = newListItem
-	if l.queue.Len() > l.capacity {
-		l.queue.Remove(l.queue.Back())
-		delete(l.items, key)
-	}
+
 	return false
 }
 
 func (l *lruCache) Get(key Key) (interface{}, bool) {
+	l.mux.Lock()
+	defer l.mux.Unlock()
+
 	val, existsInMap := l.items[key]
 	if l.queue.Len() == 0 || !existsInMap {
 		return nil, false
@@ -60,5 +72,8 @@ func (l *lruCache) Get(key Key) (interface{}, bool) {
 }
 
 func (l *lruCache) Clear() {
+	l.mux.Lock()
+	defer l.mux.Unlock()
+
 	l.queue = NewList()
 }
