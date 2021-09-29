@@ -10,22 +10,20 @@ type Task func() error
 
 func Run(tasks []Task, n, m int) (resultErr error) {
 	tasksCh := make(chan Task, n)
-	lastTaskID := n
-	for i := 0; i < lastTaskID; i++ {
-		tasksCh <- tasks[i]
-	}
-
 	errorsCh := make(chan error)
 	terminatedCh := make(chan struct{})
 
 	for i := 0; i < n; i++ {
+		tasksCh <- tasks[i]
 		go doTask(tasksCh, terminatedCh, errorsCh)
 	}
+
+	lastTaskID := n
 
 	for {
 		select {
 		case err := <-errorsCh:
-			if m < 0 || lastTaskID > len(tasks) {
+			if m < 0 || lastTaskID > len(tasks) || resultErr != nil {
 				break
 			}
 			if err != nil {
@@ -33,17 +31,16 @@ func Run(tasks []Task, n, m int) (resultErr error) {
 				if m == 0 {
 					resultErr = ErrErrorsLimitExceeded
 					close(tasksCh)
+					break
 				}
 			}
-			if lastTaskID != len(tasks) && resultErr == nil {
+			if lastTaskID != len(tasks) {
 				tasksCh <- tasks[lastTaskID]
 				lastTaskID++
 				break
 			}
-			if lastTaskID == len(tasks) && resultErr == nil {
-				lastTaskID++
-				close(tasksCh)
-			}
+			lastTaskID++
+			close(tasksCh)
 		case <-terminatedCh:
 			n--
 			if n == 0 {
