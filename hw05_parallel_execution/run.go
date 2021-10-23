@@ -9,6 +9,8 @@ var ErrErrorsLimitExceeded = errors.New("errors limit exceeded")
 type Task func() error
 
 func Run(tasks []Task, n, m int) (resultErr error) {
+	ignoreErrors := m <= 0
+
 	tasksCh := make(chan Task, n)
 	errorsCh := make(chan error)
 	terminatedCh := make(chan struct{})
@@ -23,7 +25,7 @@ func Run(tasks []Task, n, m int) (resultErr error) {
 	for {
 		select {
 		case err := <-errorsCh:
-			if m < 0 || lastTaskID > len(tasks) || resultErr != nil {
+			if !ignoreErrors && m < 0 || lastTaskID > len(tasks) || resultErr != nil {
 				break
 			}
 			if err != nil {
